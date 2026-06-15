@@ -2,6 +2,7 @@ package tn.esprit.stageete.service;
 
 import tn.esprit.stageete.Domain.Hotel;
 import tn.esprit.stageete.repositories.HotelRepository;
+import tn.esprit.stageete.repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,9 @@ public class HotelServiceImpl implements HotelService {
 
     @Autowired
     private HotelRepository hotelRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Override
     public List<Hotel> findAll() {
@@ -45,6 +49,13 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public void delete(Long id) {
+
+        if (reservationRepository.existsByHotelId(id)) {
+            throw new RuntimeException(
+                    "Impossible de supprimer cet hôtel car il possède des réservations."
+            );
+        }
+
         hotelRepository.deleteById(id);
     }
 
